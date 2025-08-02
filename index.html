@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김개발 - Game Developer Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 왼쪽 사이드바 */
+        .sidebar {
+            width: 320px;
+            background: #000;
+            position: fixed;
+            height: 100vh;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 60px;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 24px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            display: block;
+            padding: 8px 0;
+            letter-spacing: -0.3px;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #fff;
+        }
+        
+        .nav-link.active {
+            position: relative;
+        }
+        
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 20px;
+            background: #fff;
+        }
+        
+        /* 메인 컨텐츠 */
+        .main-content {
+            margin-left: 320px;
+            flex: 1;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            padding: 60px 60px 40px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .user-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+            letter-spacing: -0.8px;
+        }
+        
+        .user-title {
+            color: rgba(0,0,0,0.6);
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+        
+        .top-nav {
+            display: flex;
+            gap: 40px;
+        }
+        
+        .top-nav-link {
+            color: rgba(0,0,0,0.5);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            padding-bottom: 8px;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .top-nav-link:hover,
+        .top-nav-link.active {
+            color: #000;
+            border-bottom-color: #000;
+        }
+        
+        .content-body {
+            padding: 60px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 포트폴리오 그리드 */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .portfolio-item {
+            aspect-ratio: 4/3;
+            background: #f8f8f8;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+        
+        .portfolio-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0);
+        }
+        
+        .portfolio-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .portfolio-tech {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* About 섹션 */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: white;
+        }
+        
+        .about-text {
+            font-size: 16px;
+            line-height: 1.7;
+            color: rgba(0,0,0,0.8);
+        }
+        
+        .about-text p {
+            margin-bottom: 24px;
+        }
+        
+        .highlight {
+            color: #000;
+            font-weight: 600;
+        }
+        
+        /* 스킬 섹션 */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+        }
+        
+        .skill-category {
+            background: #f8f8f8;
+            padding: 32px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .skill-category h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skill-tag {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: rgba(0,0,0,0.8);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        /* 학습 과정 */
+        .learning-items {
+            margin-top: 40px;
+        }
+        
+        .learning-item {
+            background: #f8f8f8;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        .learning-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+        }
+        
+        .learning-progress {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 1s ease;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: rgba(0,0,0,0.6);
+            font-weight: 500;
+        }
+        
+        .learning-desc {
+            color: rgba(0,0,0,0.7);
+            line-height: 1.6;
+        }
+        
+        /* 블로그 섹션 */
+        .blog-items {
+            margin-top: 40px;
+        }
+        
+        .blog-item {
+            background: #f8f8f8;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            transition: transform 0.2s ease;
+        }
+        
+        .blog-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .blog-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        .blog-date {
+            color: rgba(0,0,0,0.5);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .blog-excerpt {
+            color: rgba(0,0,0,0.7);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        /* 연락처 */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        
+        .contact-item {
+            background: #f8f8f8;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .contact-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .contact-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+        
+        .contact-label {
+            font-size: 14px;
+            color: rgba(0,0,0,0.6);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .contact-value {
+            font-size: 16px;
+            color: #000;
+            font-weight: 500;
+        }
+        
+        /* 관리자 패널 (숨김) */
+        .admin-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .admin-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 4px;
+            font-size: 12px;
+        }
+        
+        .admin-input {
+            width: 200px;
+            padding: 8px;
+            margin: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1001;
+                background: #000;
+                color: white;
+                border: none;
+                padding: 12px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            
+            .content-header,
+            .content-body {
+                padding: 40px 40px;
+            }
+            
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+            
+            .profile-photo {
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-header,
+            .content-body {
+                padding: 24px;
+            }
+            
+            .user-name {
+                font-size: 28px;
+            }
+            
+            .top-nav {
+                gap: 24px;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .skills-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" style="display: none;">☰</button>
+    
+    <!-- 관리자 패널 (Ctrl+Shift+A로 열기) -->
+    <div class="admin-panel" id="adminPanel">
+        <div style="margin-bottom: 8px; font-weight: bold;">⚙️ 관리자 모드</div>
+        <input type="password" id="adminPassword" placeholder="비밀번호" class="admin-input">
+        <button class="admin-btn" onclick="checkPassword()">로그인</button>
+        <div id="adminControls" style="display: none;">
+            <br>
+            <button class="admin-btn" onclick="editMode()">편집 모드</button>
+            <button class="admin-btn" onclick="saveChanges()">저장</button>
+            <button class="admin-btn" onclick="closeAdmin()">닫기</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 왼쪽 사이드바 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">KIM DEV</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="showSection('overview', this)">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('portfolio', this)">Portfolio</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('skills', this)">Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('learning', this)">Learning</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('blog', this)">Analysis</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showSection('contact', this)">Contact</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- 메인 컨텐츠 -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1 class="user-name">김개발</h1>
+                <p class="user-title">Game Developer & Designer</p>
+                <nav class="top-nav">
+                    <a href="#" class="top-nav-link active" onclick="showTopSection('main', this)">Main</a>
+                    <a href="#" class="top-nav-link" onclick="showTopSection('projects', this)">Projects</a>
+                    <a href="#" class="top-nav-link" onclick="showTopSection('experience', this)">Experience</a>
+                    <a href="#" class="top-nav-link" onclick="showTopSection('education', this)">Education</a>
+                </nav>
+            </header>
+            
+            <div class="content-body">
+                <!-- Overview 섹션 -->
+                <section id="overview" class="section active">
+                    <div class="about-grid">
+                        <div class="profile-photo">🎮</div>
+                        <div class="about-text">
+                            <p>안녕하세요. <span class="highlight">게임 개발자 김개발</span>입니다.</p>
+                            <p>플레이어가 진정으로 몰입할 수 있는 게임 경험을 만드는 것이 저의 목표입니다. Unity를 활용한 게임 개발부터 게임 메커니즘 분석까지, 게임의 모든 측면에 대해 깊이 있게 연구하고 있습니다.</p>
+                            <p><span class="highlight">전문 분야:</span> Unity 게임 개발, C# 프로그래밍, 게임 기획 및 밸런싱, UI/UX 디자인</p>
+                            <p><span class="highlight">관심 분야:</span> 인디 게임 개발, 모바일 게임 최적화, 게임 내러티브 디자인, 플레이어 경험 분석</p>
+                            <p>현재 여러 게임 프로젝트를 동시에 진행하며, 게임 업계의 최신 트렌드를 분석하는 칼럼을 정기적으로 작성하고 있습니다.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Portfolio 섹션 -->
+                <section id="portfolio" class="section">
+                    <div class="portfolio-grid">
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🏰</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">던전 익스플로러</div>
+                                <div class="portfolio-tech">Unity • C# • 2D Action RPG</div>
+                            </div>
+                        </div>
+                        
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🌟</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">스타 콜렉터</div>
+                                <div class="portfolio-tech">Unity • Mobile • Puzzle</div>
+                            </div>
+                        </div>
+                        
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">⚔️</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">배틀 아레나</div>
+                                <div class="portfolio-tech">Unity • Photon • Multiplayer</div>
+                            </div>
+                        </div>
+                        
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🎲</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">보드게임 시뮬레이터</div>
+                                <div class="portfolio-tech">Unity • AI • Game Theory</div>
+                            </div>
+                        </div>
+                        
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🚀</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">스페이스 런너</div>
+                                <div class="portfolio-tech">Unity • WebGL • Endless Runner</div>
+                            </div>
+                        </div>
+                        
+                        <div class="portfolio-item">
+                            <div class="portfolio-image">🧩</div>
+                            <div class="portfolio-overlay">
+                                <div class="portfolio-title">로직 마스터</div>
+                                <div class="portfolio-tech">Unity • C# • Logic Puzzle</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Skills 섹션 -->
+                <section id="skills" class="section">
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <h3>Development Tools</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Unity 2022.3 LTS</span>
+                                <span class="skill-tag">Visual Studio</span>
+                                <span class="skill-tag">Git & GitHub</span>
+                                <span class="skill-tag">Photoshop</span>
+                                <span class="skill-tag">Blender</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category">
+                            <h3>Programming</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">C# Advanced</span>
+                                <span class="skill-tag">JavaScript</span>
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">SQL</span>
+                                <span class="skill-tag">Shader Programming</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category">
+                            <h3>Game Development</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Game Design</span>
+                                <span class="skill-tag">2D/3D Development</span>
+                                <span class="skill-tag">UI/UX Design</span>
+                                <span class="skill-tag">Game Balancing</span>
+                                <span class="skill-tag">Performance Optimization</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-category">
+                            <h3>Analysis & Planning</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Mechanism Analysis</span>
+                                <span class="skill-tag">Player Behavior</span>
+                                <span class="skill-tag">Level Design</span>
+                                <span class="skill-tag">Game Economy</span>
+                                <span class="skill-tag">Data Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Learning 섹션 -->
+                <section id="learning" class="section">
+                    <div class="learning-items">
+                        <div class="learning-item">
+                            <div class="learning-title">Unity 고급 기능 마스터</div>
+                            <div class="learning-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                <span class="progress-text">75%</span>
+                            </div>
+                            <div class="learning-desc">
+                                셰이더 프로그래밍, 고급 애니메이션 시스템, 메모리 최적화 기법을 중점적으로 학습하고 있습니다.
+                                목표 완료일: 2024년 9월
+                            </div>
+                        </div>
+                        
+                        <div class="learning-item">
+                            <div class="learning-title">게임 AI 프로그래밍</div>
+                            <div class="learning-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%"></div>
+                                </div>
+                                <span class="progress-text">45%</span>
+                            </div>
+                            <div class="learning-desc">
+                                FSM, 행동 트리, 머신러닝을 활용한 NPC AI 개발 기법을 공부하고 있습니다.
+                                목표 완료일: 2024년 10월
+                            </div>
+                        </div>
+                        
+                        <div class="learning-item">
+                            <div class="learning-title">모바일 게임 최적화</div>
+                            <div class="learning-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                                <span class="progress-text">60%</span>
+                            </div>
+                            <div class="learning-desc">
+                                Android/iOS 플랫폼 최적화, 배터리 효율성, 다양한 해상도 대응 방법을 학습 중입니다.
+                                목표 완료일: 2024년 8월
+                            </div>
+                        </div>
+                        
+                        <div class="learning-item">
+                            <div class="learning-title">게임 데이터 분석</div>
+                            <div class="learning-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%"></div>
+                                </div>
+                                <span class="progress-text">30%</span>
+                            </div>
+                            <div class="learning-desc">
+                                플레이어 데이터 수집, 분석 도구 활용, A/B 테스트 설계 방법을 공부하고 있습니다.
+                                목표 완료일: 2024년 11월
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Blog 섹션 -->
+                <section id="blog" class="section">
+                    <div class="blog-items">
+                        <div class="blog-item">
+                            <div class="blog-title">모바일 게임의 리텐션 메커니즘 분석</div>
+                            <div class="blog-date">2024.07.15</div>
+                            <div class="blog-excerpt">
+                                성공적인 모바일 게임들이 사용하는 플레이어 유지 전략을 분석했습니다. 
+                                일일 보상, 이벤트 시스템, 소셜 기능이 어떻게 플레이어의 장기적 참여를 이끌어내는지 
+                                구체적인 사례와 함께 살펴봅니다.
+                            </div>
+                        </div>
+                        
+                        <div class="blog-item">
+                            <div class="blog-title">인디 게임의 성공 요인: 혁신 vs 완성도</div>
+                            <div class="blog-date">2024.07.08</div>
+                            <div class="blog-excerpt">
+                                최근 성공한 인디 게임들을 분석하여 혁신적 아이디어와 완성도 사이의 균형점을 찾아봅니다. 
+                                제한된 자원으로 최대의 임팩트를 만들어내는 전략들을 케이스 스터디를 통해 알아봅니다.
+                            </div>
+                        </div>
+                        
+                        <div class="blog-item">
+                            <div class="blog-title">게임 밸런싱의 과학: 수치 뒤에 숨은 재미</div>
+                            <div class="blog-date">2024.06.30</div>
+                            <div class="blog-excerpt">
+                                게임의 재미를 좌우하는 밸런싱 요소들을 데이터 분석 관점에서 접근합니다. 
+                                플레이어 행동 패턴, 난이도 곡선, 보상 체계가 어떻게 상호작용하여 
+                                최적의 게임 경험을 만들어내는지 탐구합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="blog-item">
+                            <div class="blog-title">메타게임의 진화: 게임 밖 게임의 세계</div>
+                            <div class="blog-date">2024.06.22</div>
+                            <div class="blog-excerpt">
+                                현대 게임에서 점점 중요해지고 있는 메타게임 요소들을 분석합니다. 
+                                컬렉션, 성장, 커뮤니티 등이 어떻게 게임의 생명력을 연장시키고 
+                                플레이어 몰입도를 높이는지 실제 사례를 통해 살펴봅니다.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Contact 섹션 -->
+                <section id="contact" class="section">
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <div class="contact-icon">📧</div>
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value">kim.gamedev@email.com</div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">📱</div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-value">010-1234-5678</div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">💼</div>
+                            <div class="contact-label">LinkedIn</div>
+                            <div class="contact-value">linkedin.com/in/kimgamedev</div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">🐱</div>
+                            <div class="contact-label">GitHub</div>
+                            <div class="contact-value">github.com/kimgamedev</div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">🎮</div>
+                            <div class="contact-label">itch.io</div>
+                            <div class="contact-value">kimgamedev.itch.io</div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">📄</div>
+                            <div class="contact-label">Resume</div>
+                            <div class="contact-value" style="color: #667eea; cursor: pointer;">Download PDF</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        function showSection(sectionId, clickedLink) {
+            // 모든 섹션 숨기기
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 모든 네비게이션 링크 비활성화
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // 선택된 섹션 표시
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 클릭된 링크 활성화
+            clickedLink.classList.add('active');
+            
+            // 모바일에서 사이드바 닫기
+            if (window.innerWidth <= 1024) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+        
+        function showTopSection(sectionId, clickedLink) {
+            // 상단 네비게이션 활성화
+            const topNavLinks = document.querySelectorAll('.top-nav-link');
+            topNavLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            clickedLink.classList.add('active');
+        }
+        
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // 반응형 처리
+        function handleResize() {
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            if (window.innerWidth <= 1024) {
+                mobileBtn.style.display = 'block';
+            } else {
+                mobileBtn.style.display = 'none';
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+        
+        // 관리자 패널 기능 (데모용 - 실제 운영 시 제거 권장)
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === 'gamedev2024') {  // 실제로는 더 강한 보안 필요
+                document.getElementById('adminControls').style.display = 'block';
+                alert('관리자 모드 활성화! (데모용)');
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+            }
+        }
+        
+        function editMode() {
+            alert('편집 모드는 데모용입니다.\n실제로는 VS Code에서 HTML 파일을 직접 수정하세요!');
+        }
+        
+        function saveChanges() {
+            alert('저장 기능은 데모용입니다.\n실제 수정은 HTML 파일을 직접 편집해주세요!');
+        }
+        
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+        
+        // Ctrl+Shift+A로 관리자 패널 열기
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                toggleAdminPanel();
+            }
+        });
+        
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('load', handleResize);
+        
+        // 초기 로드 시 프로그레스 바 애니메이션
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
